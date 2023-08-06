@@ -1,0 +1,103 @@
+import pygame
+import pieces
+
+pygame.init()
+WIDTH = 1000
+HEIGHT = 900
+
+selection = ()
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
+timer = pygame.time.Clock()
+fps = 120
+run = True
+# Game Variables
+white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+white_locations = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0),
+                   (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
+total = []
+black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+black_locations = [(0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7),
+                   (0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)]
+
+black_dict = {'pawn': 'images/black pawn.png',
+              'rook': 'images/black rook.png',
+              'knight': 'images/black knight.png',
+              'bishop': 'images/black bishop.png',
+              'king': 'images/black king.png',
+              'queen': 'images/black queen.png'}
+
+white_dict = {'pawn': 'images/white pawn.png',
+              'rook': 'images/white rook.png',
+              'knight': 'images/white knight.png',
+              'bishop': 'images/white bishop.png',
+              'king': 'images/white king.png',
+              'queen': 'images/white queen.png'}
+
+
+def transform_pieces():
+	for i in total:
+		if i.get_name() == 'pawn':
+			i.set_image(pygame.transform.scale(i.get_image(), (65, 65)))
+		else:
+			i.set_image(pygame.transform.scale(i.get_image(), (80, 80)))
+
+
+def draw_pieces():
+	for j in total:
+		next = game.find_moves(j)
+		if j.get_name() == 'pawn':
+			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 20, j.get_location()[1] * 100 + 20))
+		else:
+			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
+		if selection == j.get_location():
+			pygame.draw.rect(screen, 'red', [j.get_location()[0] * 100 + 1, j.get_location()[1] * 100 + 1, 100, 100], 2)
+			for l in next: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
+		elif selection in next:
+			j.set_location(selection)
+
+
+def init_pices():
+	for x in range(len(white_pieces)):
+		total.append(
+			pieces.Piece(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
+	for z in range(len(black_pieces)):
+		total.append(
+			pieces.Piece(black_pieces[z], black_locations[z], pygame.image.load(black_dict[black_pieces[z]]), 'black'))
+
+
+def draw_board():
+	for i in range(32):
+		col = (i % 4)
+		row = i // 4
+		if row % 2 == 0:
+			pygame.draw.rect(screen, 'light gray', [600 - (col * 200), row * 100, 100, 100])
+		else:
+			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
+
+
+# else:
+#	pygame.draw.rect(screen, 'light gray', [900 - (col * 200), row * 100, 100, 100])
+
+init_pices()
+transform_pieces()
+game = pieces.Board(total)
+
+for i in total: print(str(i.get_name()) + str(i.get_location()))
+while run:
+	timer.tick(fps)
+	screen.fill('dark gray')
+	draw_board()
+	draw_pieces()
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			run = False
+		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+			x_coord = event.pos[0] // 100
+			y_coord = event.pos[1] // 100
+			selection = (x_coord, y_coord)
+
+	pygame.display.flip()
+
+pygame.quit()
