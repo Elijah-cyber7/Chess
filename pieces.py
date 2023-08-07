@@ -36,7 +36,7 @@ class Piece:
 
 
 class Board:
-	playable = []
+	
 	captured = []
 	moves = []
 	squares = []
