@@ -45,7 +45,7 @@ class Board:
         self.under_attack = []
         self.captured = []
         self.moves = []
-        self.locations = [] # list of moves in the game so you can record and hopefully feed to computer
+        self.locations = {}# list of moves in the game so you can record and hopefully feed to computer
 
     def get_moves(self):
         return self.moves
@@ -60,7 +60,7 @@ class Board:
         self.under_attack = attacked
         
     def get_locations(self):
-        if len(i) > 0: for i in playable: self.locations.append(i.get_location()) # this will get all the locations of the playable pieces on the board
+        if len(i) > 0: for i in playable: self.locations.append(i.get_location(): i) # creating a dictionary of the pieces with their locations being the key and instance being the value. 
         return self.locations
         
     def set_locations(self, locations):
