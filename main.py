@@ -96,7 +96,7 @@ init_pices()
 transform_pieces()
 game = pieces.Board(total)
 isAttacked = game.get_underAttack()
-
+locations = game.get_locations()
 for i in total: print(str(i.get_name()) + str(i.get_location()))
 while run:
 	timer.tick(fps)
