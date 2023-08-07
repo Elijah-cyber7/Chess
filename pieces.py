@@ -39,20 +39,33 @@ class Piece:
 
 class Board:
     squares = []
-
+    
     def __init__(self, playable):
         self.playable = playable
         self.under_attack = []
         self.captured = []
-        self.moves = []  # list of moves in the game so you can record and hopefully feed to computer
+        self.moves = []
+        self.locations = [] # list of moves in the game so you can record and hopefully feed to computer
 
+    def get_moves(self):
+        return self.moves
+        
+    def set_moves(self, moves):
+        self.moves = moves 
+        
     def get_underAttack(self):  # getter for list of pieces under attack
         return self.under_attack
-
+        
     def set_underAttack(self, attacked):  # setter for the list of under attack
         self.under_attack = attacked
-
-
+        
+    def get_locations(self):
+        if len(i) > 0: for i in playable: self.locations.append(i.get_location()) # this will get all the locations of the playable pieces on the board
+        return self.locations
+        
+    def set_locations(self, locations):
+        self.locations = locations 
+        
     def find_moves(self, piece):
         if piece.get_name() == 'pawn':
             next = [(piece.get_location()[0], piece.get_location()[1] + 1)] if piece.get_color() == 'white' else  [(piece.get_location()[0], piece.get_location()[1] - 1)]  # adding logic to distinguish if piece is black or white
