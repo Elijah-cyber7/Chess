@@ -4,6 +4,7 @@ class Piece:
 		self.location = location
 		self.image = image
 		self.color = color
+		self.valid_moves = []
 	def set_name(self, name):
 		self.name = name
 
@@ -26,6 +27,11 @@ class Piece:
 
 	def set_color(self, color):
 		self.color = color
+	def set_valid_moves(moves):
+		self.valid_moves = moves
+	def get_valid_moves():
+		return valid_moves # adding a list to store valid moves so we can then find of the valid moves which ones are attacks 
+		
 
 
 
