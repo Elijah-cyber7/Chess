@@ -62,7 +62,7 @@ class Board:
                 if i.get_location() in next:  # figuring out if next move will intersect with existing piece
                     next = [(1000, 1000)]
                 elif i.get_location() in attacking:  # getting the attack location
-                    self.under_attack.append(i.get_location)  # setting this move to be an attack instead of a regular move
+                    self.under_attack.append(i.get_location())  # setting this move to be an attack instead of a regular move
         else:
             next = [(0, 0)]
         return next

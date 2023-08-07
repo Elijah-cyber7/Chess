@@ -47,7 +47,6 @@ move_dict = {0: 'a',
 }
 # empty list to hold game information
 total = []
-isAttacked = []
 
 
 def transform_pieces(): # function meant to just scale the images to usable size
@@ -70,7 +69,6 @@ def draw_pieces(): #function to constantly draw pieces on the board
 			for l in next: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 		if selection in next:
 			j.set_location(selection)
-
 
 def init_pices(): # factory funtion to create piece objects and the board
 	for x in range(len(white_pieces)):
