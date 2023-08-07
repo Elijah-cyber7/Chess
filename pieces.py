@@ -41,10 +41,13 @@ class Board:
 	def find_moves(self, piece):
 		next = [(0,0)]
 		if piece.get_name() == 'pawn':
-			next = [(piece.get_location()[0], piece.get_location()[1] - 1)]
+			next = [(piece.get_location()[0], piece.get_location()[1] - 1)] if piece.ge_color() == 'white' else [(piece.get_location()[0], piece.get_location()[1] + 1)] # adding logic to distinguish if piece is black or white
+			next.append(next[0](0) + 1, next[0](1)) # adding diagnol attack to list of next moves 
 			for i in self.playable:
-				if i.get_location() == next:
+				if i.get_location() == next[0]: # figuring out if next move will intersect with existing piece 
 					next = [(1000,1000)]
+				else if i.get_location() == next[1]: # getting the attack location 
+					
 		return next
 
 
