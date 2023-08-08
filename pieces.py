@@ -4,7 +4,7 @@ class Piece:
         self.location = location
         self.image = image
         self.color = color
-        self.valid_moves = []
+        self.moves = {}
 
     def set_name(self, name):
         self.name = name
@@ -30,11 +30,14 @@ class Piece:
     def set_color(self, color):
         self.color = color
 
-    def set_valid_moves(self, moves):
-        self.valid_moves = moves
+    def set_moves(self, moves):
+        self.moves = moves     # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
+    def get_moves(self):
+        color_factor = 1 + (self.color == 'white')*-2
+        if self.name =='pawn':
+            self.moves.update({'attack': (self.location[0] + color_factor, self.location[1] + color_factor )})
+            self.moves.update({'move': (self.location[0] + color_factor,self.location[1])} )
 
-    def get_valid_moves(self):
-        return self.valid_moves  # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
 
 
 class Board:
@@ -60,7 +63,8 @@ class Board:
         self.under_attack = attacked
         
     def get_locations(self):
-        if len(i) > 0: for i in playable: self.locations.append(i.get_location(): i) # creating a dictionary of the pieces with their locations being the key and instance being the value. 
+        for i in self.playable: 
+            self.locations.update({i.get_location(): i}) # creating a dictionary of the pieces with their locations being the key and instance being the value. 
         return self.locations
         
     def set_locations(self, locations):
@@ -68,7 +72,7 @@ class Board:
         
     def find_moves(self, piece):
         if piece.get_name() == 'pawn':
-            next = [(piece.get_location()[0], piece.get_location()[1] + 1)] if piece.get_color() == 'white' else  [(piece.get_location()[0], piece.get_location()[1] - 1)]  # adding logic to distinguish if piece is black or white
+            next = {((piece.get_location()[0], piece.get_location()[1] + 1) if piece.get_color() == 'white' else  (piece.get_location()[0], piece.get_location()[1] - 1)): 'move'}  # adding logic to distinguish if piece is black or white
             attacking = [(next[0][0] + 1, next[0][1])]  # adding diagonal attack to list of next moves
 
             for i in self.playable:
@@ -77,5 +81,5 @@ class Board:
                 elif i.get_location() in attacking:  # getting the attack location
                     self.under_attack.append(i.get_location())  # setting this move to be an attack instead of a regular move
         else:
-            next = [(0, 0)]
+            next = {(0,0): 'none'}
         return next

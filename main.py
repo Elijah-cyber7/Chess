@@ -48,6 +48,9 @@ move_dict = {0: 'a',
 # empty list to hold game information
 total = []
 
+def event_handler(coordinates):
+	cur_piece = locations.get(coordinates)
+	pygame.draw.rect(screen, 'red', [cur_piece.get_location()[0] * 100 + 1, cur_piece.get_location()[1] * 100 + 1, 100, 100], 2) # highlighting the sqaure to show that it is selected 
 
 def transform_pieces(): # function meant to just scale the images to usable size
 	for i in total:
@@ -59,16 +62,16 @@ def transform_pieces(): # function meant to just scale the images to usable size
 
 def draw_pieces(): #function to constantly draw pieces on the board
 	for j in total:
-		next = game.find_moves(j)
+		#next = game.find_moves(j)
 		if j.get_name() == 'pawn':
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 20, j.get_location()[1] * 100 + 20))
 		else:
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
-		if selection == j.get_location():
-			pygame.draw.rect(screen, 'red', [j.get_location()[0] * 100 + 1, j.get_location()[1] * 100 + 1, 100, 100], 2)
-			for l in next: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
-		if selection in next:
-			j.set_location(selection)
+	#	if selection == j.get_location():
+	#		pygame.draw.rect(screen, 'red', [j.get_location()[0] * 100 + 1, j.get_location()[1] * 100 + 1, 100, 100], 2)
+	#		for l in next: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
+	#	if selection in next:
+	#		j.set_location(selection)
 
 def init_pices(): # factory funtion to create piece objects and the board
 	for x in range(len(white_pieces)):
