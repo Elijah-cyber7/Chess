@@ -83,3 +83,19 @@ class Board:
         else:
             next = {(0,0): 'none'}
         return next
+
+class Pawn(Piece):
+    pass
+class Rook(Piece):
+    pass
+class Bishop(Piece):
+    pass
+class King(Piece):
+    pass
+class Queen(Piece):
+    pass
+class Knight(Piece):
+    pass
+
+
+    

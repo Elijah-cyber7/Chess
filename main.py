@@ -75,12 +75,32 @@ def draw_pieces(): #function to constantly draw pieces on the board
 
 def init_pices(): # factory funtion to create piece objects and the board
 	for x in range(len(white_pieces)):
-		total.append(
-			pieces.Piece(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
-	for z in range(len(black_pieces)):
-		total.append(
-			pieces.Piece(black_pieces[z], black_locations[z], pygame.image.load(black_dict[black_pieces[z]]), 'black'))
-
+		if white_pieces[x] == 'pawn':
+			total.append(
+			pieces.Pawn(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
+			total.append(
+			pieces.Pawn(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black'))
+		elif white_pieces[x] == 'rook':
+			total.append(
+			pieces.Rook(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
+			total.append(
+			pieces.Rook(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black'))
+			
+		elif white_pieces[x] == 'bishop':
+			total.append(
+			pieces.Bishop(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
+			total.append(
+			pieces.Bishop(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black'))
+		elif white_pieces[x] == 'queen':
+			total.append(
+			pieces.Knight(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))
+			total.append(
+			pieces.Knight(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black'))
+		elif white_pieces[x] == 'queen':
+			total.append(
+			pieces.Queen(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white'))	
+			total.append(
+			pieces.Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black'))	
 
 def draw_board(): # drawing the background of the board
 	for i in range(32):
@@ -92,7 +112,8 @@ def draw_board(): # drawing the background of the board
 			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
 
 
-# else:
+# else:class (Piece):
+    pass
 #	pygame.draw.rect(screen, 'light gray', [900 - (col * 200), row * 100, 100, 100])
 
 init_pices()
