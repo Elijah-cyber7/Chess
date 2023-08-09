@@ -1,6 +1,7 @@
 import pygame
 import pieces
 
+
 pygame.init()
 WIDTH = 1000
 HEIGHT = 900
@@ -136,9 +137,13 @@ def draw_board():  # drawing the background of the board
 			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
 
 
+<<<<<<< HEAD
 # else:class (Piece):
 #   pass
 #	pygame.draw.rect(screen, 'light gray', [900 - (col * 200), row * 100, 100, 100])
+=======
+
+>>>>>>> fa99ce1 (call to event handler)
 
 init_pices()
 transform_pieces()
@@ -158,6 +163,7 @@ while run:
 			x_coord = event.pos[0] // 100
 			y_coord = event.pos[1] // 100
 			selection = (x_coord, y_coord)
+			event_handler(selection)
 
 	pygame.display.flip()
 pygame.quit()
