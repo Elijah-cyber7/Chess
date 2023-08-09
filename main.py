@@ -117,6 +117,13 @@ def init_pices():  # factory funtion to create piece objects and the board
 			total.append(
 				pieces.Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
 				             'black'))
+		elif white_pieces[x] == 'king':
+			total.append(
+				pieces.King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				             'white'))
+			total.append(
+				pieces.King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				             'black'))
 
 
 def draw_board():  # drawing the background of the board
