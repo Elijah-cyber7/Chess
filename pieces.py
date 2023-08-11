@@ -4,7 +4,7 @@ class Piece:
         self.location = location
         self.image = image
         self.color = color
-        self.moves = {}
+        self.moves = []
 
     def set_name(self, name):
         self.name = name
@@ -32,11 +32,7 @@ class Piece:
 
     def set_moves(self, moves):
         self.moves = moves     # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
-    def get_moves(self):
-        color_factor = 1 + (self.color == 'white')*-2
-        if self.name =='pawn':
-            self.moves.update({'attack': (self.location[0] + color_factor, self.location[1] + color_factor )})
-            self.moves.update({'move': (self.location[0] + color_factor,self.location[1])} )
+    
 
 
 
@@ -86,9 +82,15 @@ class Board:
 
 class Pawn(Piece):
     def get_moves(self):
-        pass
+        color_factor = 1 + (self.color == 'white')*-2
+        self.moves += [self.location[0] + color_factor, self.location[1] + color_factor ]
+        self.moves += [self.location[0] + color_factor,self.location[1]]
 class Rook(Piece):
-    pass
+    def get_moves(self):
+        for i in range( 8 - self.location[0]):
+            self.moves += [self.location[0] + i, self.location[1]]
+        for i in range(8 - self.location[1]):
+            self.moves += [self.location[0], self.location[1] + i]
 class Bishop(Piece):
     pass
 class King(Piece):
