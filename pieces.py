@@ -85,10 +85,6 @@ class Board:
         return next
 
 class Pawn(Piece):
-    def __init__(self):
-        self.moves
-        self.isUnderAttack = False
-        self.attackedBy = []
     def get_moves(self):
         pass
 class Rook(Piece):

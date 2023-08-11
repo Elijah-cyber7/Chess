@@ -1,5 +1,3 @@
-
-
 import pygame
 import pieces
 
@@ -76,12 +74,6 @@ def draw_pieces():  # function to constantly draw pieces on the board
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
 
 
-#	if selection == j.get_location():
-#		pygame.draw.rect(screen, 'red', [j.get_location()[0] * 100 + 1, j.get_location()[1] * 100 + 1, 100, 100], 2)
-#		for l in next: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
-#	if selection in next:
-#		j.set_location(selection)
-
 def init_pices():  # factory funtion to create piece objects and the board
 	for x in range(len(white_pieces)):
 		if white_pieces[x] == 'pawn':
@@ -138,15 +130,6 @@ def draw_board():  # drawing the background of the board
 		else:
 			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
 
-
-<<<<<<< HEAD
-# else:class (Piece):
-#   pass
-#	pygame.draw.rect(screen, 'light gray', [900 - (col * 200), row * 100, 100, 100])
-=======
-
->>>>>>> fa99ce1 (call to event handler)
-
 init_pices()
 transform_pieces()
 game = pieces.Board(total)
@@ -165,7 +148,7 @@ while run:
 			x_coord = event.pos[0] // 100
 			y_coord = event.pos[1] // 100
 			selection = (x_coord, y_coord)
-			event_handler(selection)
+			#event_handler(selection)
 
 	pygame.display.flip()
 pygame.quit()
