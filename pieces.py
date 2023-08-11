@@ -89,6 +89,8 @@ class Pawn(Piece):
         self.moves
         self.isUnderAttack = False
         self.attackedBy = []
+    def get_moves(self):
+        pass
 class Rook(Piece):
     pass
 class Bishop(Piece):
