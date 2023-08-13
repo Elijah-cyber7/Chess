@@ -5,6 +5,7 @@ class Piece:
         self.image = image
         self.color = color
         self.moves = []
+        self.color_factor = 1 + ((self.color == 'black') * -2)
 
     def set_name(self, name):
         self.name = name
@@ -82,23 +83,46 @@ class Board:
 
 class Pawn(Piece):
     def get_moves(self):
-        color_factor = 1 + (self.color == 'white')*-2
-        self.moves += [self.location[0] + color_factor, self.location[1] + color_factor ]
-        self.moves += [self.location[0] + color_factor,self.location[1]]
+        self.moves.append([self.location[0] - self.color_factor, self.location[1] - self.color_factor ])
+        self.moves.append([self.location[0] + self.color_factor, self.location[1] - self.color_factor])
+        self.moves.append([self.location[0],self.location[1] - self.color_factor])
+        return self.moves
 class Rook(Piece):
     def get_moves(self):
-        for i in range( 8 - self.location[0]):
-            self.moves += [self.location[0] + i, self.location[1]]
-        for i in range(8 - self.location[1]):
-            self.moves += [self.location[0], self.location[1] + i]
+        for i in range(0,8):
+            self.moves.append([self.location[0] + (i * self.color_factor), self.location[1]])
+            self.moves.append([self.location[0] - (i * self.color_factor), self.location[1]])
+        for i in range(0,8):
+            self.moves.append([self.location[0], self.location[1] + (i * self.color_factor)])
+            self.moves.append([self.location[0], self.location[1] - (i * self.color_factor)])
+        return self.moves
 class Bishop(Piece):
-    pass
+    def get_moves(self):
+        for i in range(8):
+            self.moves.append([self.location[0] + (i * self.color_factor), self.location[1] + (i * self.color_factor)])
+            self.moves.append([self.location[0] - (i * self.color_factor), self.location[1] - (i * self.color_factor)])
+            self.moves.append([self.location[0] - (i * self.color_factor), self.location[1] + (i * self.color_factor)])
+            self.moves.append([self.location[0] + (i * self.color_factor), self.location[1] - (i * self.color_factor)])
+
+
+        return self.moves
 class King(Piece):
     pass
 class Queen(Piece):
     pass
 class Knight(Piece):
-    pass
+    def get_moves(self):
+            self.moves.append([self.location[0] + 2, self.location[1] + 1])
+            self.moves.append([self.location[0] - 2, self.location[1] - 1])
+            self.moves.append([self.location[0] - 2, self.location[1] + 1])
+            self.moves.append([self.location[0] + 2, self.location[1] - 1])
+            # i wonder if there is an algorithmic way to do this, it seems like a fun mind challange
+            self.moves.append([self.location[0] + 1, self.location[1] + 2])
+            self.moves.append([self.location[0] - 1, self.location[1] - 2])
+            self.moves.append([self.location[0] - 1, self.location[1] + 2])
+            self.moves.append([self.location[0] + 1, self.location[1] - 2])
+            return self.moves
+
 
 
     

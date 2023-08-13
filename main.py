@@ -50,10 +50,15 @@ total = []
 
 
 def event_handler(coordinates):
-	cur_piece = locations.get(coordinates)
+	cur_piece = locations.get(coordinates) if coordinates in locations.keys() else None
 	pygame.draw.rect(screen, 'red',
 	                 [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
 	                 2)
+	if cur_piece :
+		draw_path(cur_piece.get_moves())
+		print(str(cur_piece.get_moves()))
+def draw_path(someList):
+	for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
 def transform_pieces():  # function meant to just scale the images to usable size
 	for i in total:
