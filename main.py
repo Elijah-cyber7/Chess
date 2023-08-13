@@ -1,12 +1,11 @@
 import pygame
 import pieces
 
-
 pygame.init()
 WIDTH = 1000
 HEIGHT = 900
 
-selection = ()
+coordinates = (10,10)
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 120
@@ -53,9 +52,8 @@ total = []
 def event_handler(coordinates):
 	cur_piece = locations.get(coordinates)
 	pygame.draw.rect(screen, 'red',
-	                 [cur_piece.get_location()[0] * 100 + 1, cur_piece.get_location()[1] * 100 + 1, 100, 100],
-	                 2)  # highlighting the sqaure to show that it is selected
-
+	                 [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
+	                 2)
 
 def transform_pieces():  # function meant to just scale the images to usable size
 	for i in total:
@@ -72,6 +70,7 @@ def draw_pieces():  # function to constantly draw pieces on the board
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 20, j.get_location()[1] * 100 + 20))
 		else:
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
+
 
 
 def init_pices():  # factory funtion to create piece objects and the board
@@ -115,10 +114,10 @@ def init_pices():  # factory funtion to create piece objects and the board
 		elif white_pieces[x] == 'king':
 			total.append(
 				pieces.King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				             'white'))
+				            'white'))
 			total.append(
 				pieces.King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				             'black'))
+				            'black'))
 
 
 def draw_board():  # drawing the background of the board
@@ -129,6 +128,7 @@ def draw_board():  # drawing the background of the board
 			pygame.draw.rect(screen, 'light gray', [600 - (col * 200), row * 100, 100, 100])
 		else:
 			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
+
 
 init_pices()
 transform_pieces()
@@ -141,14 +141,16 @@ while run:
 	screen.fill('dark gray')
 	draw_board()
 	draw_pieces()
+	event_handler(coordinates)
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 			x_coord = event.pos[0] // 100
 			y_coord = event.pos[1] // 100
-			selection = (x_coord, y_coord)
-			#event_handler(selection)
+			coordinates = (x_coord, y_coord)
+
 
 	pygame.display.flip()
 pygame.quit()
