@@ -5,7 +5,7 @@ pygame.init()
 WIDTH = 1000
 HEIGHT = 900
 
-coordinates = (10,10)
+coordinates = (10, 10)
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 120
@@ -54,11 +54,14 @@ def event_handler(coordinates):
 	pygame.draw.rect(screen, 'red',
 	                 [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
 	                 2)
-	if cur_piece :
+	if cur_piece:
 		draw_path(cur_piece.get_moves())
 		print(str(cur_piece.get_moves()))
+
+
 def draw_path(someList):
 	for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
+
 
 def transform_pieces():  # function meant to just scale the images to usable size
 	for i in total:
@@ -75,7 +78,6 @@ def draw_pieces():  # function to constantly draw pieces on the board
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 20, j.get_location()[1] * 100 + 20))
 		else:
 			screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
-
 
 
 def init_pices():  # factory funtion to create piece objects and the board
@@ -140,7 +142,7 @@ transform_pieces()
 game = pieces.Board(total)
 isAttacked = game.get_underAttack()
 locations = game.get_locations()
-for i in total: print(str(i.get_name()) + str(i.get_location()))
+
 while run:
 	timer.tick(fps)
 	screen.fill('dark gray')
@@ -155,7 +157,6 @@ while run:
 			x_coord = event.pos[0] // 100
 			y_coord = event.pos[1] // 100
 			coordinates = (x_coord, y_coord)
-
 
 	pygame.display.flip()
 pygame.quit()

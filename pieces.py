@@ -122,7 +122,3 @@ class Knight(Piece):
             self.moves.append([self.location[0] - 1, self.location[1] + 2])
             self.moves.append([self.location[0] + 1, self.location[1] - 2])
             return self.moves
-
-
-
-    
