@@ -1,11 +1,40 @@
+import numpy as np
+
+
+class Board:
+    squares = []
+
+    def __init__(self, playable):
+        self.playable = playable
+        self.under_attack = []
+        self.captured = []
+        self.moves = []
+        self.locations = {}  # list of moves in the game so you can record and hopefully feed to computer
+
+    def get_moves(self):
+        return self.moves
+
+    def set_moves(self, moves):
+        self.moves = moves
+
+    def get_underAttack(self):  # getter for list of pieces under attack
+        return self.under_attack
+
+    def set_underAttack(self, attacked):  # setter for the list of under attack
+        self.under_attack = attacked
+
+
 class Piece:
+    piece_list = {}
+
     def __init__(self, name, location, image, color):
         self.name = name
-        self.location = location
+        self.location = tuple(location)
         self.image = image
         self.color = color
         self.moves = []
         self.color_factor = 1 + ((self.color == 'black') * -2)
+        self.piece_list.update({self.location: self})
 
     def set_name(self, name):
         self.name = name
@@ -32,95 +61,78 @@ class Piece:
         self.color = color
 
     def set_moves(self, moves):
-        self.moves = moves     # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
-    
+        self.moves = moves  # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
 
-
-
-class Board:
-    squares = []
-    
-    def __init__(self, playable):
-        self.playable = playable
-        self.under_attack = []
-        self.captured = []
-        self.moves = []
-        self.locations = {}# list of moves in the game so you can record and hopefully feed to computer
-
-    def get_moves(self):
-        return self.moves
-        
-    def set_moves(self, moves):
-        self.moves = moves 
-        
-    def get_underAttack(self):  # getter for list of pieces under attack
-        return self.under_attack
-        
-    def set_underAttack(self, attacked):  # setter for the list of under attack
-        self.under_attack = attacked
-        
     def get_locations(self):
-        for i in self.playable: 
-            self.locations.update({i.get_location(): i}) # creating a dictionary of the pieces with their locations being the key and instance being the value. 
-        return self.locations
-        
-    def set_locations(self, locations):
-        self.locations = locations 
-        
-    def find_moves(self, piece):
-        if piece.get_name() == 'pawn':
-            next = {((piece.get_location()[0], piece.get_location()[1] + 1) if piece.get_color() == 'white' else  (piece.get_location()[0], piece.get_location()[1] - 1)): 'move'}  # adding logic to distinguish if piece is black or white
-            attacking = [(next[0][0] + 1, next[0][1])]  # adding diagonal attack to list of next moves
+        return self.piece_list.keys()
 
-            for i in self.playable:
-                if i.get_location() in next:  # figuring out if next move will intersect with existing piece
-                    next = [(1000, 1000)]
-                elif i.get_location() in attacking:  # getting the attack location
-                    self.under_attack.append(i.get_location())  # setting this move to be an attack instead of a regular move
-        else:
-            next = {(0,0): 'none'}
-        return next
+    def get_locations(self, color):
+        uhh = lambda x: x if self.piece_list.get(x).get_color() == color else None
+        return map(uhh, self.piece_list.keys())
+
+    def add(self, x, y):
+        return tuple(map(sum, zip(x, y)))
+
 
 class Pawn(Piece):
     def get_moves(self):
-        self.moves.append([self.location[0] - self.color_factor, self.location[1] - self.color_factor ])
-        self.moves.append([self.location[0] + self.color_factor, self.location[1] - self.color_factor])
-        self.moves.append([self.location[0],self.location[1] - self.color_factor])
+        self.moves.append([self.location[0] - self.color_factor, self.location[1] + self.color_factor])
+        self.moves.append([self.location[0] + self.color_factor, self.location[1] + self.color_factor])
+        self.moves.append([self.location[0], self.location[1] + self.color_factor])
         return self.moves
+
+
 class Rook(Piece):
     def get_moves(self):
-        for i in range(0,8):
+        for i in range(0, 8):
             self.moves.append([self.location[0] + (i * self.color_factor), self.location[1]])
             self.moves.append([self.location[0] - (i * self.color_factor), self.location[1]])
-        for i in range(0,8):
+        for i in range(0, 8):
             self.moves.append([self.location[0], self.location[1] + (i * self.color_factor)])
             self.moves.append([self.location[0], self.location[1] - (i * self.color_factor)])
         return self.moves
+
+
 class Bishop(Piece):
+    def __init(self, name, location, image, color):
+        super().__init__(name, location, image, color)
+
     def get_moves(self):
+        moves = []
+        i = 0
+        z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations(self.color) else ()
         for i in range(8):
-            self.moves.append([self.location[0] + (i * self.color_factor), self.location[1] + (i * self.color_factor)])
-            self.moves.append([self.location[0] - (i * self.color_factor), self.location[1] - (i * self.color_factor)])
-            self.moves.append([self.location[0] - (i * self.color_factor), self.location[1] + (i * self.color_factor)])
-            self.moves.append([self.location[0] + (i * self.color_factor), self.location[1] - (i * self.color_factor)])
+            num = i * self.color_factor
+            tup_1 = (num, num)
+            moves.append(z(self.location, tup_1))
+            moves.append(z(self.location, (tup_1 * -1)))
+            moves.append(z(self.location, (tup_1[0] * -1, tup_1[1])))
+            moves.append(z(self.location, (tup_1[0], tup_1[1] * -1)))
+        for m in moves: self.moves.append(m) if not m == () else None
+        return list(self.moves)
 
 
-        return self.moves
 class King(Piece):
     pass
+
+
 class Queen(Piece):
     pass
+
+
 class Knight(Piece):
     def get_moves(self):
-            self.moves.append([self.location[0] + 2, self.location[1] + 1])
-            self.moves.append([self.location[0] - 2, self.location[1] - 1])
-            self.moves.append([self.location[0] - 2, self.location[1] + 1])
-            self.moves.append([self.location[0] + 2, self.location[1] - 1])
-            # i wonder if there is an algorithmic way to do this, it seems like a fun mind challange
-            self.moves.append([self.location[0] + 1, self.location[1] + 2])
-            self.moves.append([self.location[0] - 1, self.location[1] - 2])
-            self.moves.append([self.location[0] - 1, self.location[1] + 2])
-            self.moves.append([self.location[0] + 1, self.location[1] - 2])
-            return self.moves
+        self.moves.append([self.location[0] + 2, self.location[1] + 1])
+        self.moves.append([self.location[0] - 2, self.location[1] - 1])
+        self.moves.append([self.location[0] - 2, self.location[1] + 1])
+        self.moves.append([self.location[0] + 2, self.location[1] - 1])
+        # i wonder if there is an algorithmic way to do this, it seems like a fun mind challange
+        self.moves.append([self.location[0] + 1, self.location[1] + 2])
+        self.moves.append([self.location[0] - 1, self.location[1] - 2])
+        self.moves.append([self.location[0] - 1, self.location[1] + 2])
+        self.moves.append([self.location[0] + 1, self.location[1] - 2])
+        return self.moves
 
-
+# we want to keep adding moves until we reach one of our pices or an opposing piece. If it is an opposing piece i want it to stop on that piece so that it is attackable
+while flag:
+    add to list unless intersection

@@ -1,5 +1,5 @@
 import pygame
-import pieces
+from pieces import *
 
 pygame.init()
 WIDTH = 1000
@@ -46,6 +46,7 @@ move_dict = {0: 'a',
              7: 'h',
              }
 # empty list to hold game information
+
 total = []
 
 
@@ -60,6 +61,7 @@ def event_handler(coordinates):
 
 
 def draw_path(someList):
+	print(someList)
 	for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
 
@@ -84,47 +86,47 @@ def init_pices():  # factory funtion to create piece objects and the board
 	for x in range(len(white_pieces)):
 		if white_pieces[x] == 'pawn':
 			total.append(
-				pieces.Pawn(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				            'white'))
+				Pawn(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				     'white'))
 			total.append(
-				pieces.Pawn(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				            'black'))
+				Pawn(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				     'black'))
 		elif white_pieces[x] == 'rook':
 			total.append(
-				pieces.Rook(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				            'white'))
+				Rook(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				     'white'))
 			total.append(
-				pieces.Rook(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				            'black'))
+				Rook(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				     'black'))
 
 		elif white_pieces[x] == 'bishop':
 			total.append(
-				pieces.Bishop(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				              'white'))
+				Bishop(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				       'white'))
 			total.append(
-				pieces.Bishop(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				              'black'))
+				Bishop(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				       'black'))
 		elif white_pieces[x] == 'knight':
 			total.append(
-				pieces.Knight(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				              'white'))
+				Knight(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				       'white'))
 			total.append(
-				pieces.Knight(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				              'black'))
+				Knight(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				       'black'))
 		elif white_pieces[x] == 'queen':
 			total.append(
-				pieces.Queen(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				             'white'))
+				Queen(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				      'white'))
 			total.append(
-				pieces.Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				             'black'))
+				Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				      'black'))
 		elif white_pieces[x] == 'king':
 			total.append(
-				pieces.King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
-				            'white'))
+				King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]),
+				     'white'))
 			total.append(
-				pieces.King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
-				            'black'))
+				King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]),
+				     'black'))
 
 
 def draw_board():  # drawing the background of the board
@@ -137,15 +139,16 @@ def draw_board():  # drawing the background of the board
 			pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
 
 
+Piece.game_board = Board(total)
+game = Piece.game_board
 init_pices()
 transform_pieces()
-game = pieces.Board(total)
-isAttacked = game.get_underAttack()
-locations = game.get_locations()
 
 while run:
 	timer.tick(fps)
 	screen.fill('dark gray')
+	isAttacked = game.get_underAttack()
+	locations = Piece.piece_list
 	draw_board()
 	draw_pieces()
 	event_handler(coordinates)
