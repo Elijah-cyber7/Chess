@@ -55,13 +55,14 @@ def event_handler(coordinates):
 	pygame.draw.rect(screen, 'red',
 	                 [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
 	                 2)
-	if cur_piece:
+	while cur_piece:
+		# print(str(cur_piece.get_moves()))
 		draw_path(cur_piece.get_moves())
-		print(str(cur_piece.get_moves()))
+		break
 
 
 def draw_path(someList):
-	print(someList)
+	# print(someList)
 	for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
 
@@ -160,6 +161,8 @@ while run:
 			x_coord = event.pos[0] // 100
 			y_coord = event.pos[1] // 100
 			coordinates = (x_coord, y_coord)
+			print(coordinates)
+			print(locations)
 
 	pygame.display.flip()
 pygame.quit()
