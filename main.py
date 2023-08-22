@@ -129,12 +129,13 @@ def event_handler(coordinates):
 	                 2)
 	if coordinates in next:
 		Last.set_location(coordinates)
-	elif coordinates in next and cur_piece:
+	elif coordinates in next and not cur_piece.get_location() == coordinates:
 		print(cur_piece)
 		locations.remove(cur_piece.get_location)
 		Last.set_location(coordinates)
 	elif cur_piece:
 		next = cur_piece.get_moves()
+		del Last
 		Last = cur_piece
 		draw_path(cur_piece.get_moves())
 

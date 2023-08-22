@@ -88,10 +88,10 @@ class Piece:
 class Pawn(Piece):
 	def get_moves(self):
 		self.moves.clear()
-		self.moves.append([self.location[0] - self.color_factor, self.location[1] + self.color_factor])
-		self.moves.append([self.location[0] + self.color_factor, self.location[1] + self.color_factor])
-		self.moves.append([self.location[0], self.location[1] + self.color_factor])
-		return self.moves
+		self.moves.append((self.location[0] - self.color_factor, self.location[1] + self.color_factor))
+		self.moves.append((self.location[0] + self.color_factor, self.location[1] + self.color_factor))
+		self.moves.append((self.location[0], self.location[1] + self.color_factor))
+		return self.clean(self.moves)
 
 
 class Rook(Piece):
