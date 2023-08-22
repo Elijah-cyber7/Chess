@@ -129,10 +129,12 @@ def event_handler(coordinates):
 	                 2)
 	if coordinates in next:
 		Last.set_location(coordinates)
+		next.clear()
 	elif coordinates in next and not cur_piece.get_location() == coordinates:
 		print(cur_piece)
 		locations.remove(cur_piece.get_location)
 		Last.set_location(coordinates)
+		next.clear()
 	elif cur_piece:
 		next = cur_piece.get_moves()
 		del Last

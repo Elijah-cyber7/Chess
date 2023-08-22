@@ -72,14 +72,14 @@ class Piece:
 		self.moves = moves  # adding a list to store valid moves so we can then find of the valid moves which ones are attacks
 
 	def get_locations(self):
-		return self.piece_list.keys()
+		return list(self.piece_list.keys())
 
 	def get_locations_B(self):
 		uhh = lambda x: tuple(x) if self.piece_list.get(x).get_color() == self.color else None
 		return list(map(uhh, self.piece_list.keys()))
 
 	def add(self, x, y):
-		return tuple(map(sum, zip(x, y)))
+		return tuple(((x[0] + y[0]), (x[1]+y[1])))
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		del self
@@ -96,27 +96,32 @@ class Pawn(Piece):
 
 class Rook(Piece):
 	def get_moves(self):
+		print("called")
 		self.moves.clear()
-		z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations() and not self.add(x,y) == () else ()
+		z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations_B() else ()
 		i = 0
 		e, f, g, h, can_move = True, True, True, True, True
 		while can_move and i < 8:
 			num = i * self.color_factor
 			tup_1 = (num, num)
+			if not e and f and g and h:
+				can_move = False
+			if z(self.location, (tup_1[0], 0)) == (): e = False, print(z(self.location, (tup_1[0], 0)))
 			if e:
 				self.moves.append(z(self.location, (tup_1[0], 0)))
-			if not z(self.location, (tup_1[0] * -1, 0)): f = False
+			if z(self.location, (tup_1[0] * -1, 0)) == (): f = False
 			if f:
 				self.moves.append(z(self.location, (tup_1[0] * -1, 0)))
 
-			if not z(self.location, (0, tup_1[0] * -1)): g = False
+			if z(self.location, (0, tup_1[0] * -1)) == (): g = False
 			if g:
 				self.moves.append(z(self.location, (0, tup_1[0] * -1)))
-			if not z(self.location, (0, tup_1[0])): h = False
+			if z(self.location, (0, tup_1[0])) == (): h = False
 			if h:
 				self.moves.append(z(self.location, (0, tup_1[0])))
 
 			i += 1
+		print(self.moves)
 		return self.clean(self.moves)
 
 
