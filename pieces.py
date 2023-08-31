@@ -1,4 +1,3 @@
-
 class Board:
 	squares = []
 
@@ -38,11 +37,14 @@ class Piece:
 		self.name = name
 
 	def clean(self, lis):
+		print(lis)
 		mo = []
 		for i in lis:
 			if not i == ():
 				if i[0] <= 7 and i[1] <= 7 and i[0] >= 0 and i[1] >= 0 and i not in self.get_locations_B():
 					mo.append(tuple(i))
+			else:
+				continue
 		return mo
 
 	def set_location(self, location):
@@ -79,18 +81,36 @@ class Piece:
 		return list(map(uhh, self.piece_list.keys()))
 
 	def add(self, x, y):
-		return tuple(((x[0] + y[0]), (x[1]+y[1])))
+		print(tuple(((x[0] + y[0]), (x[1] + y[1]))))
+		return tuple(((x[0] + y[0]), (x[1] + y[1])))
+
+	def check(self, x):
+		if x not in self.get_locations_B():
+			self.moves.append(tuple(x))
+			return True
+
+		else:
+			return False
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		del self
 
 
 class Pawn(Piece):
+	def __init__(self, name, location, image, color):
+		super().__init__(name, location, image, color)
+		self.onStart = True
 	def get_moves(self):
 		self.moves.clear()
-		self.moves.append((self.location[0] - self.color_factor, self.location[1] + self.color_factor))
-		self.moves.append((self.location[0] + self.color_factor, self.location[1] + self.color_factor))
-		self.moves.append((self.location[0], self.location[1] + self.color_factor))
+		if self.onStart:
+			self.moves.append((self.location[0] - self.color_factor, self.location[1] + self.color_factor))
+			self.moves.append((self.location[0] - self.color_factor, self.location[1] + self.color_factor))
+			self.moves.append((self.location[0] + self.color_factor, self.location[1] + self.color_factor))
+			self.moves.append((self.location[0], self.location[1] + self.color_factor*2))
+			self.moves.append((self.location[0], self.location[1] + self.color_factor))
+
+
+
 		return self.clean(self.moves)
 
 
@@ -98,68 +118,45 @@ class Rook(Piece):
 	def get_moves(self):
 		print("called")
 		self.moves.clear()
-		z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations_B() else ()
-		i = 0
+		i = 1
 		e, f, g, h, can_move = True, True, True, True, True
 		while can_move and i < 8:
 			num = i * self.color_factor
-			tup_1 = (num, num)
-			if not e and f and g and h:
+			if not (e or f or g or h):
 				can_move = False
-			if z(self.location, (tup_1[0], 0)) == (): e = False, print(z(self.location, (tup_1[0], 0)))
-			if e:
-				self.moves.append(z(self.location, (tup_1[0], 0)))
-			if z(self.location, (tup_1[0] * -1, 0)) == (): f = False
-			if f:
-				self.moves.append(z(self.location, (tup_1[0] * -1, 0)))
-
-			if z(self.location, (0, tup_1[0] * -1)) == (): g = False
-			if g:
-				self.moves.append(z(self.location, (0, tup_1[0] * -1)))
-			if z(self.location, (0, tup_1[0])) == (): h = False
-			if h:
-				self.moves.append(z(self.location, (0, tup_1[0])))
-
+			if e: e = self.check(self.add(self.location, (num, 0)))
+			if f: f = self.check(self.add(self.location, (num * -1, 0)))
+			if g: g = self.check(self.add(self.location, (0, num * -1)))
+			if h: h = self.check(self.add(self.location, (0, num)))
 			i += 1
-		print(self.moves)
 		return self.clean(self.moves)
 
 
 class Bishop(Piece):
-	def __init(self, name, location, image, color):
-		super().__init__(name, location, image, color)
 
 	def get_moves(self):
 		self.moves.clear()
-		z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations() and not self.add(x, y) == () else ()
-		i = 0
+		i = 1
 		a, b, c, d, can_move = True, True, True, True, True
 		while can_move and i < 8:
 			num = i * self.color_factor
-			tup_1 = (num, num)
 			if not a and b and c and d:
 				can_move = False
-			if not z(self.location, tup_1) == (): a = False
-			if a:
-				self.moves.append(z(self.location, tup_1))
-
-			if not z(self.location, (tup_1[0] * -1, tup_1[1] * -1)) == (): b = False
-			if b:
-				self.moves.append(z(self.location, (tup_1[0] * -1, tup_1[1] * -1)))
-
-			if not z(self.location, (tup_1[0], tup_1[1] * -1)): c = False
-			if c:
-				self.moves.append(z(self.location, (tup_1[0], tup_1[1] * -1)))
-
-			if not z(self.location, (tup_1[0] * -1, tup_1[1])): d = False
-			if d:
-				self.moves.append(z(self.location, (tup_1[0] * -1, tup_1[1])))
+			if a: a = self.check(self.add(self.location, (num, num)))
+			if b: b = self.check(self.add(self.location, (num * -1, num * -1)))
+			if c: c = self.check(self.add(self.location, (num, num * -1)))
+			if d: d = self.check(self.add(self.location, (num * -1, num)))
 			i += 1
 		return self.clean(self.moves)
 
 
 class King(Piece):
-	pass
+	def get_moves(self):
+		self.moves.clear()
+		for i in range(-1, 2):
+			for x in range(-1, 2):
+				self.check(self.add(self.location, tuple((i, x))))
+		return self.clean(self.moves)
 
 
 class Queen(Piece):
@@ -168,42 +165,21 @@ class Queen(Piece):
 
 	def get_moves(self):
 		self.moves.clear()
-		z = lambda x, y: self.add(x, y) if not self.add(x, y) in self.get_locations() and not self.add(x, y) == () else ()
-		i = 0
+		i = 1
 		a, b, c, d, e, f, g, h, can_move = True, True, True, True, True, True, True, True, True
 		while can_move and i < 8:
 			num = i * self.color_factor
 			tup_1 = (num, num)
 			if not a and b and c and d:
 				can_move = False
-			if not z(self.location, tup_1) == (): a = False
-			if a:
-				self.moves.append(z(self.location, tup_1))
-
-			if not z(self.location, (tup_1[0] * -1, tup_1[1] * -1)) == (): b = False
-			if b:
-				self.moves.append(z(self.location, (tup_1[0] * -1, tup_1[1] * -1)))
-
-			if not z(self.location, (tup_1[0], tup_1[1] * -1)): c = False
-			if c:
-				self.moves.append(z(self.location, (tup_1[0], tup_1[1] * -1)))
-
-			if not z(self.location, (tup_1[0] * -1, tup_1[1])): d = False
-			if d:
-				self.moves.append(z(self.location, (tup_1[0] * -1, tup_1[1])))
-			if not z(self.location, (tup_1[0], 0)): e = False
-			if e:
-				self.moves.append(z(self.location, (tup_1[0], 0)))
-			if not z(self.location, (tup_1[0] * -1, 0)): f = False
-			if f:
-				self.moves.append(z(self.location, (tup_1[0] * -1, 0)))
-
-			if not z(self.location, (0, tup_1[0] * -1)): g = False
-			if g:
-				self.moves.append(z(self.location, (0, tup_1[0] * -1)))
-			if not z(self.location, (0, tup_1[0])): h = False
-			if h:
-				self.moves.append(z(self.location, (0, tup_1[0])))
+			if a: a = self.check(self.add(self.location, (num, num)))
+			if b: b = self.check(self.add(self.location, (num * -1, num * -1)))
+			if c: c = self.check(self.add(self.location, (num, num * -1)))
+			if d: d = self.check(self.add(self.location, (num * -1, num)))
+			if e: e = self.check(self.add(self.location, (num, 0)))
+			if f: f = self.check(self.add(self.location, (num * -1, 0)))
+			if g: g = self.check(self.add(self.location, (0, num * -1)))
+			if h: h = self.check(self.add(self.location, (0, num)))
 
 			i += 1
 		return self.clean(self.moves)
@@ -212,14 +188,9 @@ class Queen(Piece):
 class Knight(Piece):
 	def get_moves(self):
 		self.moves.clear()
-		self.moves.append((self.location[0] + 2, self.location[1] + 1))
-		self.moves.append((self.location[0] - 2, self.location[1] - 1))
-		self.moves.append((self.location[0] - 2, self.location[1] + 1))
-		self.moves.append((self.location[0] + 2, self.location[1] - 1))
-		# i wonder if there is an algorithmic way to do this, it seems like a fun mind challange
-		self.moves.append((self.location[0] + 1, self.location[1] + 2))
-		self.moves.append((self.location[0] - 1, self.location[1] - 2))
-		self.moves.append((self.location[0] - 1, self.location[1] + 2))
-		self.moves.append((self.location[0] + 1, self.location[1] - 2))
-		print(self.clean(self.moves))
+		for i in range(-2, 3):
+			if i == 0:
+				continue
+			for x in range(2):
+				self.check(self.add(self.location, tuple((i, (3-abs(i))*((x%2)*2-1)))))
 		return self.clean(self.moves)
