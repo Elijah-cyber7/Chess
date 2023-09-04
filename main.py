@@ -123,7 +123,7 @@ def event_handler(coordinates):
     global next
     global Last
 
-    cur_piece = locations.get(coordinates) if coordinates in locations.keys() else None
+    cur_piece = locations.get(coordinates) if coordinates in locations.keys() and locations.get(coordinates).get_color() == game.get_turn() else None
     pygame.draw.rect(screen, 'red',
                      [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
                      2)
@@ -133,21 +133,25 @@ def event_handler(coordinates):
             locations.pop(Last.get_piece())
             Last.set_location(coordinates)
             next.clear()
+            game.set_turn()
         else:
             Last.set_location(coordinates)
             next.clear()
+            game.set_turn()
 
     elif coordinates in next and not cur_piece.get_location() == coordinates:
         print(cur_piece)
-        locations. pop(cur_piece.get_location)
+        locations.pop(cur_piece.get_location)
         Last.set_location(coordinates)
         next.clear()
+        game.set_turn()
 
     elif cur_piece:
         next = list(cur_piece.get_moves().keys())
         del Last
         Last = cur_piece
         draw_path(cur_piece.get_moves().keys())
+        #game.set_turn()
 
 
 def draw_path(someList):
@@ -155,6 +159,7 @@ def draw_path(someList):
     for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
 
+game = Board(Piece.piece_list)
 while run:
     timer.tick(fps)
     screen.fill('dark gray')

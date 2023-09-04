@@ -20,8 +20,8 @@ class Board:
     def set_underAttack(self, attacked):  # setter for the list of under attack
         self.under_attack = attacked
     def get_turn(self):
-        if self.turn % 2: return 'white'
-        else: return 'black'
+        if self.turn % 2: return 'black'
+        else: return 'white'
     def set_turn(self):
         self.turn +=1
 
