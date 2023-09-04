@@ -6,8 +6,8 @@ class Board:
         self.under_attack = []
         self.captured = []
         self.moves = []
-        self.locations = {}  # list of moves in the game so you can record and hopefully feed to computer
-
+        self.locations = {}
+        self.turn = 2           # list of moves in the game so you can record and hopefully feed to computer
     def get_moves(self):
         return self.moves
 
@@ -19,7 +19,11 @@ class Board:
 
     def set_underAttack(self, attacked):  # setter for the list of under attack
         self.under_attack = attacked
-
+    def get_turn(self):
+        if self.turn % 2: return 'white'
+        else: return 'black'
+    def set_turn(self):
+        self.turn +=1
 
 class Piece:
     piece_list = {}
@@ -39,12 +43,11 @@ class Piece:
         self.name = name
 
     def clean(self, lis):
-        print(lis)
-        mo = []
+        mo = {}
         for i in lis:
             if not i == ():
                 if i[0] <= 7 and i[1] <= 7 and i[0] >= 0 and i[1] >= 0 and i not in self.get_locations_B():
-                    mo.append(tuple(i))
+                    mo.update({tuple(i):self.moves.get(i)})
             else:
                 continue
         return mo
@@ -85,7 +88,6 @@ class Piece:
         uhh = lambda x: tuple(x) if not self.piece_list.get(x).get_color() == self.color else None
         return list(map(uhh, self.piece_list.keys()))
     def add(self, x, y):
-        print(tuple(((x[0] + y[0]), (x[1] + y[1]))))
         return tuple(((x[0] + y[0]), (x[1] + y[1])))
 
     def check(self, x):
@@ -108,13 +110,15 @@ class Pawn(Piece):
         super().__init__(name, location, image, color)
         self.onStart = True
         self.en = False
+        self.kill = ()
     def google_en_passant(self,x):
         targets = [self.add(x,(1,0)), self.add(x,(-1,0))]
         for trg in targets:
             piece =  self.piece_list.get(tuple(trg))
             if trg in self.get_locations() and piece.get_name() == 'pawn':
-                piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'attack'})
+                piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'en'})
                 piece.set_en(True)
+                piece.set_piece(x)
                 print("EN PASSANT")
     def check(self, x):
         if x not in self.get_locations():
@@ -141,8 +145,12 @@ class Pawn(Piece):
         return self.clean(self.moves)
     def set_en(self, e):
         self.en = e
-
-
+    def get_en(self):
+        return self.en
+    def set_piece(self,pawn):
+        self.kill = pawn
+    def get_piece(self):
+        return tuple(self.kill)
 class Rook(Piece):
     def get_moves(self):
         print("called")
