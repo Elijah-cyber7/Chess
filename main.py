@@ -37,15 +37,7 @@ white_dict = {'pawn': 'images/white pawn.png',
               'queen': 'images/white queen.png'}
 # dictionary to translate from grid to chess moves
 
-move_dict = {0: 'a',
-             1: 'b',
-             2: 'c',
-             3: 'd',
-             4: 'e',
-             5: 'f',
-             6: 'g',
-             7: 'h',
-             }
+
 
 
 # empty list to hold game information
@@ -141,7 +133,6 @@ while run:
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
             print(coordinates)
-            print(locations)
 
     pygame.display.flip()
 pygame.quit()

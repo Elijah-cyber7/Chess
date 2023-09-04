@@ -1,10 +1,20 @@
 class Board:
     squares = []
     locations = {}
+    moves = []
+    move_dict = {0: 'a',
+                 1: 'b',
+                 2: 'c',
+                 3: 'd',
+                 4: 'e',
+                 5: 'f',
+                 6: 'g',
+                 7: 'h',
+                 }
     def __init__(self):
         self.under_attack = []
         self.captured = []
-        self.moves = []
+        self.moves = Board.moves
         self.turn = 2
         self.Last = Piece
         self.next = [] # list of moves in the game so you can record and hopefully feed to computer
@@ -38,10 +48,12 @@ class Board:
                 self.Last.set_en(False)
                 self.locations.pop(self.Last.get_piece())
                 self.Last.set_location(coordinates)
+                self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
                 self.next.clear()
                 self.set_turn()
             else:
                 self.Last.set_location(coordinates)
+                self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
                 self.next.clear()
                 self.set_turn()
             return []
@@ -50,8 +62,10 @@ class Board:
             print(cur_piece)
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
+            self.moves.append(str(cur_piece.get_notation()) +'x'+ str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
             self.next.clear()
             self.set_turn()
+            print('called?')
             return []
         elif cur_piece:
             self.next = list(cur_piece.get_moves().keys())
@@ -77,7 +91,14 @@ class Piece:
 
     def set_name(self, name):
         self.name = name
-
+    def get_notation(self):
+        dict  = {'pawn': '',
+                 'rook': 'R',
+                 'king': 'K',
+                 'queen': 'Q',
+                 'bishop': 'B',
+                 'knight': 'N',}
+        return dict.get(self.get_name())
     def clean(self, lis):
         mo = {}
         for i in lis:
@@ -155,7 +176,6 @@ class Pawn(Piece):
                 piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'en'})
                 piece.set_en(True)
                 piece.set_piece(x)
-                print("EN PASSANT")
     def check(self, x):
         if x not in self.get_locations():
             self.moves.update({tuple(x): 'move'})
