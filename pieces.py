@@ -1,13 +1,15 @@
 class Board:
     squares = []
-
-    def __init__(self, playable):
-        self.playable = playable
+    locations = {}
+    def __init__(self):
         self.under_attack = []
         self.captured = []
         self.moves = []
-        self.locations = {}
-        self.turn = 2           # list of moves in the game so you can record and hopefully feed to computer
+        self.turn = 2
+        self.Last = Piece
+        self.next = [] # list of moves in the game so you can record and hopefully feed to computer
+    def get_locations(self):
+        return self.locations
     def get_moves(self):
         return self.moves
 
@@ -24,11 +26,44 @@ class Board:
         else: return 'white'
     def set_turn(self):
         self.turn +=1
+    def add_Piece(self,Piece):
+        self.locations.update({Piece.get_location(): Piece})
+    def move(self, coordinates):
+
+        cur_piece = self.locations.get(coordinates) if coordinates in self.locations.keys() and self.locations.get(
+            coordinates).get_color() == self.get_turn() else None
+
+        if coordinates in self.next:
+            if self.Last.get_name() == 'pawn' and self.Last.get_moves().get(coordinates) == 'en':
+                self.Last.set_en(False)
+                self.locations.pop(self.Last.get_piece())
+                self.Last.set_location(coordinates)
+                self.next.clear()
+                self.set_turn()
+            else:
+                self.Last.set_location(coordinates)
+                self.next.clear()
+                self.set_turn()
+            return []
+
+        elif coordinates in self.next and not cur_piece.get_location() == coordinates:
+            print(cur_piece)
+            self.locations.pop(cur_piece.get_location)
+            self.Last.set_location(coordinates)
+            self.next.clear()
+            self.set_turn()
+            return []
+        elif cur_piece:
+            self.next = list(cur_piece.get_moves().keys())
+            del self.Last
+            self.Last = cur_piece
+            return cur_piece.get_moves().keys()
+            # game.set_turn()
+        return []
 
 class Piece:
-    piece_list = {}
 
-    def __init__(self, name, location, image, color):
+    def __init__(self, name, location, image, color, board):
         self.name = name
         self.location = tuple(location)
         self.starting_square = location
@@ -37,7 +72,8 @@ class Piece:
         self.moves = {}
         self.attacks = []
         self.color_factor = 1 + ((self.color == 'black') * -2)
-        self.piece_list.update({self.location: self})
+        self.board = board
+        self.piece_list = Board.locations
 
     def set_name(self, name):
         self.name = name
@@ -106,8 +142,8 @@ class Piece:
 
 
 class Pawn(Piece):
-    def __init__(self, name, location, image, color):
-        super().__init__(name, location, image, color)
+    def __init__(self, name, location, image, color,board):
+        super().__init__(name, location, image, color,board)
         self.onStart = True
         self.en = False
         self.kill = ()

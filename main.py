@@ -10,6 +10,7 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 120
 run = True
+game = Board()
 # Game Variables, lists for black and white pieces and locations
 white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
                 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
@@ -52,35 +53,35 @@ def init_pices():  # factory funtion to create piece objects and the board
     for x in range(len(white_pieces)):
         if white_pieces[x] == 'pawn':
 
-            Pawn(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+            game.add_Piece(Pawn(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            Pawn(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+            game.add_Piece(Pawn(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
         elif white_pieces[x] == 'rook':
 
-            Rook(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+            game.add_Piece(Rook(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            Rook(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+            game.add_Piece(Rook(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
 
         elif white_pieces[x] == 'bishop':
 
-            Bishop(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+            game.add_Piece(Bishop(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            Bishop(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+            game.add_Piece(Bishop(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
         elif white_pieces[x] == 'knight':
 
-            Knight(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+            game.add_Piece(Knight(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            Knight(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+            game.add_Piece(Knight(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
         elif white_pieces[x] == 'queen':
 
-            Queen(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+            game.add_Piece(Queen(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+            game.add_Piece(Queen(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
         elif white_pieces[x] == 'king':
 
-            King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white')
+           game.add_Piece(King(white_pieces[x], white_locations[x], pygame.image.load(white_dict[white_pieces[x]]), 'white', game))
 
-            King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black')
+           game.add_Piece( King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black', game))
 
 
 def draw_board():  # drawing the background of the board
@@ -94,9 +95,8 @@ def draw_board():  # drawing the background of the board
 
 
 init_pices()
-next = []
-Last = Piece
-locations = Piece.piece_list
+
+locations = game.get_locations()
 
 
 def transform_pieces():  # function meant to just scale the images to usable size
@@ -118,55 +118,20 @@ def draw_pieces():  # function to constantly draw pieces on the board
         else:
             screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
 
-
-def event_handler(coordinates):
-    global next
-    global Last
-
-    cur_piece = locations.get(coordinates) if coordinates in locations.keys() and locations.get(coordinates).get_color() == game.get_turn() else None
-    pygame.draw.rect(screen, 'red',
-                     [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
-                     2)
-    if coordinates in next:
-        if Last.get_name() == 'pawn' and Last.get_moves().get(coordinates) == 'en':
-            Last.set_en(False)
-            locations.pop(Last.get_piece())
-            Last.set_location(coordinates)
-            next.clear()
-            game.set_turn()
-        else:
-            Last.set_location(coordinates)
-            next.clear()
-            game.set_turn()
-
-    elif coordinates in next and not cur_piece.get_location() == coordinates:
-        print(cur_piece)
-        locations.pop(cur_piece.get_location)
-        Last.set_location(coordinates)
-        next.clear()
-        game.set_turn()
-
-    elif cur_piece:
-        next = list(cur_piece.get_moves().keys())
-        del Last
-        Last = cur_piece
-        draw_path(cur_piece.get_moves().keys())
-        #game.set_turn()
-
-
 def draw_path(someList):
     # print(someList)
     for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
-
-game = Board(Piece.piece_list)
 while run:
     timer.tick(fps)
     screen.fill('dark gray')
-    locations = Piece.piece_list
     draw_board()
     draw_pieces()
-    event_handler(coordinates)
+    locations = Board.locations
+    draw_path(game.move(coordinates))
+    pygame.draw.rect(screen, 'red',
+                     [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
+                     2)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -176,6 +141,7 @@ while run:
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
             print(coordinates)
+            print(locations)
 
     pygame.display.flip()
 pygame.quit()
