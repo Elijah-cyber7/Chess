@@ -1,7 +1,9 @@
 class Board:
     squares = []
     locations = {}
+    piece_moves = {}
     moves = []
+    test_locations = {}
     move_dict = {0: 'a',
                  1: 'b',
                  2: 'c',
@@ -20,17 +22,43 @@ class Board:
         self.next = [] # list of moves in the game so you can record and hopefully feed to computer
     def get_locations(self):
         return self.locations
-    def get_moves(self):
-        return self.moves
+    def get_moves(self, color):
+        self.piece_moves.clear()
+        for i in self.locations.values():
+            if not i.get_color() == color: # get all the opposite colors moves
+                self.piece_moves.update(i.get_moves()) # add them to one big dictionary of moves to attack or regular moves i.e (0,0): 'attack' or (0,1) : 'move'
+        return self.piece_moves
 
-    def set_moves(self, moves):
-        self.moves = moves
 
-    def get_underAttack(self):  # getter for list of pieces under attack
+    def get_underAttack(self, color):  # getter for list of pieces under attack
+        self.under_attack.clear()
+        mvs = self.get_moves(color) # grab all the opponents moves
+        for i in mvs.keys(): # get all the pieces with moves probably want to make sure the moves are valid beforehand to account for pinned pieces
+            if mvs.get(i) == 'attack' and i in self.locations: # if the move is an attack then we add the move and the piece it is attacking to our under_attack list
+                self.under_attack.append(self.locations.get(i).get_name())
         return self.under_attack
 
-    def set_underAttack(self, attacked):  # setter for the list of under attack
-        self.under_attack = attacked
+    def valid_moves(self,some_piece):
+        valid = {}
+        attacked = self.get_underAttack(some_piece.get_color()) #get the color of the piece to move, so we can grab all of our pieces that are under attack
+        if 'king' in attacked: # if our king is under attack then we want to get the move that will result in it not being under attack.
+            next = some_piece.get_moves()
+            for i in next.keys(): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
+                temp = self.locations.get(i)
+                if next.get(i) == 'attack': self.locations.pop(i) # if the move is an attack then we want to see what happens if that piece is off the board too
+                self.locations.pop(some_piece.get_location()) # pick up our current piece
+                self.locations.update({i: some_piece}) # see what it looks like in one of its moves
+                new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
+                if next.get(i) == 'attack': self.locations.update({i: temp }) # add the attacked piece back
+                if 'king' not in new_attacks:
+                    valid.update({i: next.get(i)})
+                    self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+                else:
+                    self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
+        else:
+            valid = some_piece.get_moves()
+        return valid
+
     def get_turn(self):
         if self.turn % 2: return 'black'
         else: return 'white'
@@ -41,7 +69,7 @@ class Board:
     def move(self, coordinates):
 
         cur_piece = self.locations.get(coordinates) if coordinates in self.locations.keys() and self.locations.get(
-            coordinates).get_color() == self.get_turn() else None
+            coordinates).get_color() == self.get_turn() else None # we want to get the piece that is currently selected so we check to see if it is an actual piece and if its that pieces color's turn to move
 
         if coordinates in self.next:
             if self.Last.get_name() == 'pawn' and self.Last.get_moves().get(coordinates) == 'en':
@@ -49,11 +77,13 @@ class Board:
                 self.locations.pop(self.Last.get_piece())
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
+                print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             else:
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
+                print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             return []
@@ -63,12 +93,14 @@ class Board:
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
             self.moves.append(str(cur_piece.get_notation()) +'x'+ str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
+            print(self.get_underAttack(self.get_turn()))
             self.next.clear()
             self.set_turn()
             print('called?')
             return []
         elif cur_piece:
-            self.next = list(cur_piece.get_moves().keys())
+            self.next = list(self.valid_moves(cur_piece).keys())
+            print(self.get_underAttack(self.get_turn()))
             del self.Last
             self.Last = cur_piece
             return cur_piece.get_moves().keys()
