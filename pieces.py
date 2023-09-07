@@ -49,11 +49,13 @@ class Board:
                 self.locations.pop(some_piece.get_location()) # pick up our current piece
                 self.locations.update({i: some_piece}) # see what it looks like in one of its moves
                 new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
-                if next.get(i) == 'attack': self.locations.update({i: temp }) # add the attacked piece back
+                self.locations.update({i: temp}) # add the attacked piece back
                 if 'king' not in new_attacks:
                     valid.update({i: next.get(i)})
+                    self.locations.pop(i)
                     self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
                 else:
+                    self.locations.pop(i)
                     self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
         else:
             valid = some_piece.get_moves()
@@ -100,10 +102,12 @@ class Board:
             return []
         elif cur_piece:
             self.next = list(self.valid_moves(cur_piece).keys())
+            self.next = list(cur_piece.get_moves().keys())
+            print("calleddd")
             print(self.get_underAttack(self.get_turn()))
-            del self.Last
+            if self.Last: del self.Last
             self.Last = cur_piece
-            return cur_piece.get_moves().keys()
+            return list(self.valid_moves(cur_piece).keys())
             # game.set_turn()
         return []
 
@@ -135,16 +139,16 @@ class Piece:
         mo = {}
         for i in lis:
             if not i == ():
-                if i[0] <= 7 and i[1] <= 7 and i[0] >= 0 and i[1] >= 0 and i not in self.get_locations_B():
+                if i[0] <= 7 and i[1] <= 7 and i[0] >= 0 and i[1] >= 0 and i not in self.get_locations_B(): # make sure the location is on the board
                     mo.update({tuple(i):self.moves.get(i)})
             else:
                 continue
         return mo
 
     def set_location(self, location):
-        self.piece_list.pop(self.location)
+        Board.locations.pop(self.location)
         self.location = location
-        self.piece_list.update({self.location: self})
+        Board.locations.update({self.location: self})
 
     def get_name(self):
         return self.name
@@ -171,7 +175,7 @@ class Piece:
         return list(self.piece_list.keys())
 
     def get_locations_B(self):
-        uhh = lambda x: tuple(x) if self.piece_list.get(x).get_color() == self.color else None
+        uhh = lambda x: tuple(x) if self.piece_list.get(x).get_color() == self.color else None # get the location of friendly pieces
         return list(map(uhh, self.piece_list.keys()))
     def get_enemy_locations(self):
         uhh = lambda x: tuple(x) if not self.piece_list.get(x).get_color() == self.color else None
@@ -197,7 +201,7 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, name, location, image, color,board):
         super().__init__(name, location, image, color,board)
-        self.onStart = True
+        self.onStart = False
         self.en = False
         self.kill = ()
     def google_en_passant(self,x):
@@ -247,7 +251,7 @@ class Rook(Piece):
         e, f, g, h, can_move = True, True, True, True, True
         while can_move and i < 8:
             num = i * self.color_factor
-            if not (e or f or g or h):
+            if not e and f and g and h:
                 can_move = False
             if e: e = self.check(self.add(self.location, (num, 0)))
             if f: f = self.check(self.add(self.location, (num * -1, 0)))
@@ -292,10 +296,9 @@ class Queen(Piece):
         self.moves.clear()
         i = 1
         a, b, c, d, e, f, g, h, can_move = True, True, True, True, True, True, True, True, True
-        while can_move and i < 8:
+        while can_move and i <= 7:
             num = i * self.color_factor
-            tup_1 = (num, num)
-            if not a and b and c and d:
+            if not a and b and c and d and e and g and f and h:
                 can_move = False
             if a: a = self.check(self.add(self.location, (num, num)))
             if b: b = self.check(self.add(self.location, (num * -1, num * -1)))
