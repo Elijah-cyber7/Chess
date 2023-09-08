@@ -43,20 +43,30 @@ class Board:
         attacked = self.get_underAttack(some_piece.get_color()) #get the color of the piece to move, so we can grab all of our pieces that are under attack
         if 'king' in attacked: # if our king is under attack then we want to get the move that will result in it not being under attack.
             next = some_piece.get_moves()
-            for i in next.keys(): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
-                temp = self.locations.get(i)
-                if next.get(i) == 'attack': self.locations.pop(i) # if the move is an attack then we want to see what happens if that piece is off the board too
-                self.locations.pop(some_piece.get_location()) # pick up our current piece
-                self.locations.update({i: some_piece}) # see what it looks like in one of its moves
-                new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
-                self.locations.update({i: temp}) # add the attacked piece back
-                if 'king' not in new_attacks:
-                    valid.update({i: next.get(i)})
-                    self.locations.pop(i)
-                    self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+            for i in next.keys():
+                if not self.locations.get(i): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
+                    self.locations.pop(some_piece.get_location()) # pick up our current piece
+                    self.locations.update({i: some_piece}) # see what it looks like in one of its moves
+                    new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
+
+                    if 'king' not in new_attacks:
+                        valid.update({i: next.get(i)})
+                        self.locations.pop(i)
+                        self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+
+                    else:
+                        self.locations.pop(i)
+                        self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
                 else:
+                    temp = self.locations.get(i)
+                    self.locations.pop(some_piece.get_location())
                     self.locations.pop(i)
-                    self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
+                    new_attacks = self.get_underAttack(some_piece.get_color())  # reevaluate the board
+                    if 'king' not in new_attacks:
+                        valid.update({i: next.get(i)})
+                        self.locations.update({i: temp})
+                        self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+
         else:
             valid = some_piece.get_moves()
         return valid
@@ -91,6 +101,7 @@ class Board:
             return []
 
         elif coordinates in self.next and not cur_piece.get_location() == coordinates:
+            if cur_piece.get_name() == 'pawn': cur_piece.set_en(False)
             print(cur_piece)
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
@@ -211,7 +222,6 @@ class Pawn(Piece):
             if trg in self.get_locations() and piece.get_name() == 'pawn':
                 piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'en'})
                 piece.set_en(True)
-                piece.set_piece(x)
     def check(self, x):
         if x not in self.get_locations():
             self.moves.update({tuple(x): 'move'})
@@ -224,7 +234,7 @@ class Pawn(Piece):
             if attack in self.get_enemy_locations():
                 self.moves.update({attack: 'attack'})
     def get_moves(self):
-        if not self.en: self.moves.clear()
+        self.moves.clear()
         maybe_en_passant = self.add(self.location,tuple((0,self.color_factor*2)))
         if self.location == self.starting_square:
             if self.check(self.add(self.location, tuple((0,self.color_factor)))):
@@ -239,10 +249,6 @@ class Pawn(Piece):
         self.en = e
     def get_en(self):
         return self.en
-    def set_piece(self,pawn):
-        self.kill = pawn
-    def get_piece(self):
-        return tuple(self.kill)
 class Rook(Piece):
     def get_moves(self):
         print("called")
