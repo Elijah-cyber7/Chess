@@ -34,7 +34,7 @@ class Board:
         self.under_attack.clear()
         mvs = self.get_moves(color) # grab all the opponents moves
         for i in mvs.keys(): # get all the pieces with moves probably want to make sure the moves are valid beforehand to account for pinned pieces
-            if mvs.get(i) == 'attack' and i in self.locations: # if the move is an attack then we add the move and the piece it is attacking to our under_attack list
+            if i in self.locations: # if the move is an attack then we add the move and the piece it is attacking to our under_attack list
                 self.under_attack.append(self.locations.get(i).get_name())
         return self.under_attack
 
@@ -61,15 +61,25 @@ class Board:
                     temp = self.locations.get(i)
                     self.locations.pop(some_piece.get_location())
                     self.locations.pop(i)
+                    self.locations.update({i: some_piece})
                     new_attacks = self.get_underAttack(some_piece.get_color())  # reevaluate the board
                     if 'king' not in new_attacks:
                         valid.update({i: next.get(i)})
                         self.locations.update({i: temp})
                         self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
-
-        else:
+                    else:
+                        self.locations.update({i: temp})
+                        self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
+            return valid
+        elif 'king' not in attacked:
             valid = some_piece.get_moves()
         return valid
+    def get_all_valid_moves(self,color):
+        all_moves = {}
+        for i in list(self.locations.values()):
+            if i.get_color() == color:
+                all_moves.update({i: self.valid_moves(i).keys()})
+        return all_moves
 
     def get_turn(self):
         if self.turn % 2: return 'black'
@@ -101,7 +111,6 @@ class Board:
             return []
 
         elif coordinates in self.next and not cur_piece.get_location() == coordinates:
-            if cur_piece.get_name() == 'pawn': cur_piece.set_en(False)
             print(cur_piece)
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
@@ -109,17 +118,13 @@ class Board:
             print(self.get_underAttack(self.get_turn()))
             self.next.clear()
             self.set_turn()
-            print('called?')
             return []
         elif cur_piece:
             self.next = list(self.valid_moves(cur_piece).keys())
-            self.next = list(cur_piece.get_moves().keys())
-            print("calleddd")
             print(self.get_underAttack(self.get_turn()))
             if self.Last: del self.Last
             self.Last = cur_piece
             return list(self.valid_moves(cur_piece).keys())
-            # game.set_turn()
         return []
 
 class Piece:
@@ -251,7 +256,6 @@ class Pawn(Piece):
         return self.en
 class Rook(Piece):
     def get_moves(self):
-        print("called")
         self.moves.clear()
         i = 1
         e, f, g, h, can_move = True, True, True, True, True
