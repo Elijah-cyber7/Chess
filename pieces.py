@@ -41,39 +41,37 @@ class Board:
     def valid_moves(self,some_piece):
         valid = {}
         attacked = self.get_underAttack(some_piece.get_color()) #get the color of the piece to move, so we can grab all of our pieces that are under attack
-        if 'king' in attacked: # if our king is under attack then we want to get the move that will result in it not being under attack.
-            next = some_piece.get_moves()
-            for i in next.keys():
-                if not self.locations.get(i): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
-                    self.locations.pop(some_piece.get_location()) # pick up our current piece
-                    self.locations.update({i: some_piece}) # see what it looks like in one of its moves
-                    new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
+         # if our king is under attack then we want to get the move that will result in it not being under attack.
+        next = some_piece.get_moves()
+        for i in next.keys():
+            if not self.locations.get(i): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
+                self.locations.pop(some_piece.get_location()) # pick up our current piece
+                self.locations.update({i: some_piece}) # see what it looks like in one of its moves
+                new_attacks = self.get_underAttack(some_piece.get_color()) # reevaluate the board
 
-                    if 'king' not in new_attacks:
-                        valid.update({i: next.get(i)})
-                        self.locations.pop(i)
-                        self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
-
-                    else:
-                        self.locations.pop(i)
-                        self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
-                else:
-                    temp = self.locations.get(i)
-                    self.locations.pop(some_piece.get_location())
+                if 'king' not in new_attacks:
+                    valid.update({i: next.get(i)})
                     self.locations.pop(i)
-                    self.locations.update({i: some_piece})
-                    new_attacks = self.get_underAttack(some_piece.get_color())  # reevaluate the board
-                    if 'king' not in new_attacks:
-                        valid.update({i: next.get(i)})
-                        self.locations.update({i: temp})
-                        self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
-                    else:
-                        self.locations.update({i: temp})
-                        self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
-            return valid
-        elif 'king' not in attacked:
-            valid = some_piece.get_moves()
+                    self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+
+                else:
+                    self.locations.pop(i)
+                    self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
+            else:
+                temp = self.locations.get(i)
+                self.locations.pop(some_piece.get_location())
+                self.locations.pop(i)
+                self.locations.update({i: some_piece})
+                new_attacks = self.get_underAttack(some_piece.get_color())  # reevaluate the board
+                if 'king' not in new_attacks:
+                    valid.update({i: next.get(i)})
+                    self.locations.update({i: temp})
+                    self.locations.update({some_piece.get_location(): some_piece}) # reset the piece we were going to move
+                else:
+                    self.locations.update({i: temp})
+                    self.locations.update({some_piece.get_location(): some_piece})  # reset the piece we were going to move
         return valid
+
     def get_all_valid_moves(self,color):
         all_moves = {}
         for i in list(self.locations.values()):
