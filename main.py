@@ -136,11 +136,10 @@ def draw_pieces():  # function to constantly draw pieces on the board
 
 
 def draw_path(someList):
-    # print(someList)
-    if -10 not in someList:
+    if someList == -10: print('Thats Game!')
+    elif -10 not in someList:
         for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
-    else:
-        print("Thats game!")
+
 
 
 while run:
@@ -161,7 +160,7 @@ while run:
             x_coord = event.pos[0] // 100
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
-            print(coordinates)
+            #print(coordinates)
 
     pygame.display.flip()
 pygame.quit()

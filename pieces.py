@@ -40,8 +40,6 @@ class Board:
 
     def valid_moves(self,some_piece):
         valid = {}
-        attacked = self.get_underAttack(some_piece.get_color()) #get the color of the piece to move, so we can grab all of our pieces that are under attack
-         # if our king is under attack then we want to get the move that will result in it not being under attack.
         next = some_piece.get_moves()
         for i in next.keys():
             if not self.locations.get(i): # we can temporarily pop the piece to moves location out of the board locations list and insert a move and then retest the enemy's attacks to see if they can still attack our king
@@ -73,11 +71,12 @@ class Board:
         return valid
 
     def get_all_valid_moves(self,color):
-        all_moves = {}
+        #self.piece_moves.clear()
+        ii = 0
         for i in list(self.locations.values()):
             if i.get_color() == color:
-                all_moves.update({i: self.valid_moves(i).keys()})
-        return all_moves
+                if self.valid_moves(i).keys(): ii +=1
+        return ii
 
     def get_turn(self):
         if self.turn % 2: return 'black'
@@ -90,39 +89,41 @@ class Board:
 
         cur_piece = self.locations.get(coordinates) if coordinates in self.locations.keys() and self.locations.get(
             coordinates).get_color() == self.get_turn() else None # we want to get the piece that is currently selected so we check to see if it is an actual piece and if its that pieces color's turn to move
-
+        if cur_piece and not self.get_all_valid_moves(cur_piece.get_color()):
+            return -10
         if coordinates in self.next:
             if self.Last.get_name() == 'pawn' and self.Last.get_moves().get(coordinates) == 'en':
                 self.Last.set_en(False)
                 self.locations.pop(self.Last.get_piece())
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-                print(self.get_underAttack(self.get_turn()))
+                #print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             else:
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-                print(self.get_underAttack(self.get_turn()))
+                #print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             return []
 
         elif coordinates in self.next and not cur_piece.get_location() == coordinates:
-            print(cur_piece)
+            #print(cur_piece)
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
             self.moves.append(str(cur_piece.get_notation()) +'x'+ str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-            print(self.get_underAttack(self.get_turn()))
+            #print(self.get_underAttack(self.get_turn()))
             self.next.clear()
             self.set_turn()
             return []
         elif cur_piece:
             self.next = list(self.valid_moves(cur_piece).keys())
-            print(self.get_underAttack(self.get_turn()))
+            #print(self.get_underAttack(self.get_turn()))
             if self.Last: del self.Last
             self.Last = cur_piece
             return list(self.valid_moves(cur_piece).keys())
+
         return []
 
 class Piece:
@@ -152,7 +153,7 @@ class Piece:
     def clean(self, lis):
         mo = {}
         for i in lis:
-            if not i == ():
+            if not i == () and not i == self.get_location():
                 if i[0] <= 7 and i[1] <= 7 and i[0] >= 0 and i[1] >= 0 and i not in self.get_locations_B(): # make sure the location is on the board
                     mo.update({tuple(i):self.moves.get(i)})
             else:
