@@ -19,7 +19,7 @@ class Board:
         self.moves = Board.moves
         self.turn = 2
         self.Last = Piece
-        self.next = [] # list of moves in the game so you can record and hopefully feed to computer
+        self.next = {} # list of moves in the game so you can record and hopefully feed to computer
     def get_locations(self):
         return self.locations
     def get_moves(self, color):
@@ -91,35 +91,30 @@ class Board:
             coordinates).get_color() == self.get_turn() else None # we want to get the piece that is currently selected so we check to see if it is an actual piece and if its that pieces color's turn to move
         if cur_piece and not self.get_all_valid_moves(cur_piece.get_color()):
             return -10
-        if coordinates in self.next:
-            if self.Last.get_name() == 'pawn' and self.Last.get_moves().get(coordinates) == 'en':
-                self.Last.set_en(False)
+        if coordinates in self.next.keys():
+            if self.Last.get_name() == 'pawn' and self.next.get(coordinates) == 'en':
+                self.Last.google_en_passant(self.Last.get_location())
                 self.locations.pop(self.Last.get_piece())
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-                #print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             else:
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-                #print(self.get_underAttack(self.get_turn()))
                 self.next.clear()
                 self.set_turn()
             return []
 
-        elif coordinates in self.next and not cur_piece.get_location() == coordinates:
-            #print(cur_piece)
+        elif coordinates in self.next.keys() and not cur_piece.get_location() == coordinates:
             self.locations.pop(cur_piece.get_location)
             self.Last.set_location(coordinates)
             self.moves.append(str(cur_piece.get_notation()) +'x'+ str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-            #print(self.get_underAttack(self.get_turn()))
             self.next.clear()
             self.set_turn()
             return []
         elif cur_piece:
-            self.next = list(self.valid_moves(cur_piece).keys())
-            #print(self.get_underAttack(self.get_turn()))
+            self.next = self.valid_moves(cur_piece)
             if self.Last: del self.Last
             self.Last = cur_piece
             return list(self.valid_moves(cur_piece).keys())
@@ -220,11 +215,11 @@ class Pawn(Piece):
         self.en = False
         self.kill = ()
     def google_en_passant(self,x):
-        targets = [self.add(x,(1,0)), self.add(x,(-1,0))]
+        targets = [self.add(x,(self.color_factor*-1,0)), self.add(x,(self.color_factor,0))]
         for trg in targets:
             piece =  self.piece_list.get(tuple(trg))
             if trg in self.get_locations() and piece.get_name() == 'pawn':
-                piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'en'})
+                piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'enn'})
                 piece.set_en(True)
     def check(self, x):
         if x not in self.get_locations():
@@ -238,16 +233,16 @@ class Pawn(Piece):
             if attack in self.get_enemy_locations():
                 self.moves.update({attack: 'attack'})
     def get_moves(self):
-        self.moves.clear()
+        if not self.en : self.moves.clear()
         maybe_en_passant = self.add(self.location,tuple((0,self.color_factor*2)))
         if self.location == self.starting_square:
             if self.check(self.add(self.location, tuple((0,self.color_factor)))):
-                self.check(maybe_en_passant)
-                self.google_en_passant(maybe_en_passant)
+                if self.check(maybe_en_passant): self.moves.update({maybe_en_passant: 'en'})
 
         else:
             self.check(self.add(self.location, tuple((0,self.color_factor))))
         self.check_attacks()
+        self.en = False
         return self.clean(self.moves)
     def set_en(self, e):
         self.en = e
