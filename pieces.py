@@ -27,6 +27,7 @@ class Board:
         for i in self.locations.values():
             if not i.get_color() == color: # get all the opposite colors moves
                 self.piece_moves.update(i.get_moves()) # add them to one big dictionary of moves to attack or regular moves i.e (0,0): 'attack' or (0,1) : 'move'
+        print(list(self.piece_moves.keys()))
         return self.piece_moves
 
 

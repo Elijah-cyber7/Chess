@@ -1,3 +1,6 @@
+import math
+import random
+
 import pygame
 from pieces import *
 
@@ -140,6 +143,17 @@ def draw_path(someList):
     elif -10 not in someList:
         for l in someList: pygame.draw.circle(screen, 'red', [(l[0] * 100) + 50, (l[1] * 100) + 50], 5, 0)
 
+def auto_play(move_list):
+    if len(move_list) <= 1 : return 0
+    magic = random.randint(0,len(game.get_locations())-1)
+    keys = list(game.get_locations().keys())
+    moves = list(game.valid_moves(game.locations.get(keys[magic])).keys())
+    mag = random.randint(0,len(moves)-1)
+    print(game.moves)
+    game.move(keys[magic])
+    game.move(moves[mag])
+    return auto_play(list(game.get_moves(game.get_turn()).keys()))
+
 
 
 while run:
@@ -160,6 +174,7 @@ while run:
             x_coord = event.pos[0] // 100
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
+            auto_play(list(game.get_moves(game.get_turn()).keys()))
             #print(coordinates)
 
     pygame.display.flip()
