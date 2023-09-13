@@ -216,10 +216,10 @@ class Pawn(Piece):
         self.en = False
         self.kill = ()
     def google_en_passant(self,x):
-        targets = [self.add(x,(self.color_factor*-1,0)), self.add(x,(self.color_factor,0))]
+        targets = [self.add(x,(self.color_factor*-1,0)), self.add(x,(self.color_factor,0))] # this is the place where the pice would move to attack the current piece using en passant
         for trg in targets:
             piece =  self.piece_list.get(tuple(trg))
-            if trg in self.get_locations() and piece.get_name() == 'pawn':
+            if trg in self.get_locations() and piece.get_name() == 'pawn': # so we just want to check that if there is a piece there that it is a pawn
                 piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'enn'})
                 piece.set_en(True)
     def check(self, x):
