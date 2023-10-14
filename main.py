@@ -174,7 +174,7 @@ while run:
             x_coord = event.pos[0] // 100
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
-            auto_play(list(game.get_moves(game.get_turn()).keys()))
+           # auto_play(list(game.get_moves(game.get_turn()).keys()))
             #print(coordinates)
 
     pygame.display.flip()

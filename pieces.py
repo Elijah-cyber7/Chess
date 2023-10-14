@@ -93,13 +93,26 @@ class Board:
         if cur_piece and not self.get_all_valid_moves(cur_piece.get_color()):
             return -10
         if coordinates in self.next.keys():
-            if self.Last.get_name() == 'pawn' and self.next.get(coordinates) == 'en':
-                self.Last.google_en_passant(self.Last.get_location())
-                self.locations.pop(self.Last.get_piece())
-                self.Last.set_location(coordinates)
-                self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
-                self.next.clear()
-                self.set_turn()
+            if self.Last.get_name() == 'pawn':
+                if self.next.get(coordinates) == 'en':
+                    print("WE HERE")
+                    self.Last.google_en_passant(coordinates)
+                    self.Last.set_location(coordinates)
+                    self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
+                    self.next.clear()
+                    self.set_turn()
+                elif self.next.get(coordinates) == 'enn':
+                    self.Last.set_en(False)
+                    self.locations.pop(self.Last.get_piece())
+                    self.Last.set_location(coordinates)
+                    self.next.clear()
+                    self.set_turn()
+                else:
+                    self.Last.set_en(False)
+                    self.Last.set_location(coordinates)
+                    self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
+                    self.next.clear()
+                    self.set_turn()
             else:
                 self.Last.set_location(coordinates)
                 self.moves.append(str(self.Last.get_notation()) + str(Board.move_dict.get(coordinates[0])) + str(coordinates[1]))
@@ -212,7 +225,6 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, name, location, image, color,board):
         super().__init__(name, location, image, color,board)
-        self.onStart = False
         self.en = False
         self.kill = ()
     def google_en_passant(self,x):
@@ -221,6 +233,8 @@ class Pawn(Piece):
             piece =  self.piece_list.get(tuple(trg))
             if trg in self.get_locations() and piece.get_name() == 'pawn': # so we just want to check that if there is a piece there that it is a pawn
                 piece.moves.update({tuple(self.add(x,(0,self.color_factor*-1))): 'enn'})
+                print("Added")
+                piece.set_piece(x)
                 piece.set_en(True)
     def check(self, x):
         if x not in self.get_locations():
@@ -243,12 +257,16 @@ class Pawn(Piece):
         else:
             self.check(self.add(self.location, tuple((0,self.color_factor))))
         self.check_attacks()
-        self.en = False
+        #self.en = False
         return self.clean(self.moves)
     def set_en(self, e):
         self.en = e
-    def get_en(self):
-        return self.en
+    def get_piece(self):
+        return self.kill
+    def set_piece(self, x):
+        self.kill = x
+    def clear_moves(self):
+        self.moves.clear()
 class Rook(Piece):
     def get_moves(self):
         self.moves.clear()
