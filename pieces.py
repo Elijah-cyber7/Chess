@@ -145,7 +145,7 @@ class Piece:
         self.color = color
         self.moves = {}
         self.attacks = []
-        self.color_factor = 1 + ((self.color == 'black') * -2)
+        self.color_factor = 1 + ((self.color == 'white') * -2)
         self.board = board
         self.piece_list = Board.locations
 
