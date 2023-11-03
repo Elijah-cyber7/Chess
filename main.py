@@ -1,13 +1,10 @@
-import math
 import random
-
 import pygame
 from pieces import *
 
 pygame.init()
 WIDTH = 1000
 HEIGHT = 900
-
 coordinates = (10, 10)
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
@@ -15,6 +12,7 @@ fps = 120
 run = True
 game = Board()
 # Game Variables, lists for black and white pieces and locations
+
 white_pieces = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook',
                 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
 black_locations = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0),
@@ -39,9 +37,7 @@ white_dict = {'pawn': 'images/white pawn.png',
               'king': 'images/white king.png',
               'queen': 'images/white queen.png'}
 
-
 # dictionary to translate from grid to chess moves
-
 
 # empty list to hold game information
 def init_pices():  # factory funtion to create piece objects and the board
@@ -102,7 +98,6 @@ def init_pices():  # factory funtion to create piece objects and the board
                 King(black_pieces[x], black_locations[x], pygame.image.load(black_dict[black_pieces[x]]), 'black',
                      game))
 
-
 def draw_board():  # drawing the background of the board
     for i in range(32):
         col = (i % 4)
@@ -112,11 +107,9 @@ def draw_board():  # drawing the background of the board
         else:
             pygame.draw.rect(screen, 'light gray', [700 - (col * 200), row * 100, 100, 100])
 
-
 init_pices()
 
 locations = game.get_locations()
-
 
 def transform_pieces():  # function meant to just scale the images to usable size
     for i in locations.values():
@@ -125,9 +118,7 @@ def transform_pieces():  # function meant to just scale the images to usable siz
         else:
             i.set_image(pygame.transform.scale(i.get_image(), (80, 80)))
 
-
 transform_pieces()
-
 
 def draw_pieces():  # function to constantly draw pieces on the board
     for j in locations.values():
@@ -136,7 +127,6 @@ def draw_pieces():  # function to constantly draw pieces on the board
             screen.blit(j.get_image(), (j.get_location()[0] * 100 + 20, j.get_location()[1] * 100 + 20))
         else:
             screen.blit(j.get_image(), (j.get_location()[0] * 100 + 10, j.get_location()[1] * 100 + 10))
-
 
 def draw_path(someList):
     if someList == -10: print('Thats Game!')
@@ -154,8 +144,6 @@ def auto_play(move_list):
     game.move(moves[mag])
     return auto_play(list(game.get_moves(game.get_turn()).keys()))
 
-
-
 while run:
     timer.tick(fps)
     screen.fill('dark gray')
@@ -163,9 +151,7 @@ while run:
     draw_pieces()
     locations = Board.locations
     draw_path(game.move(coordinates))
-    pygame.draw.rect(screen, 'red',
-                     [coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],
-                     2)
+    pygame.draw.rect(screen, 'red',[coordinates[0] * 100 + 1, coordinates[1] * 100 + 1, 100, 100],2)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -175,7 +161,7 @@ while run:
             y_coord = event.pos[1] // 100
             coordinates = (x_coord, y_coord)
            # auto_play(list(game.get_moves(game.get_turn()).keys()))
-            #print(coordinates)
+           #print(coordinates)
 
     pygame.display.flip()
 pygame.quit()

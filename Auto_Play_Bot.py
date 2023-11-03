@@ -21,10 +21,7 @@ class Bot:
 	def move(self, board):
 
 	def opening(self,board,movecount):
-
 		moves = lambda x: tuple(x) if x == 'move' else None
 		self.moves = list(map(moves, self.game.get_moves().keys()))
-
-
 
 
