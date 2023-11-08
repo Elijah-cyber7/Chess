@@ -18,10 +18,8 @@ class Bot:
 	}
 	lost_list = []
 	attackable = []
-	def move(self, board):
-
-	def opening(self,board,movecount):
-		moves = lambda x: tuple(x) if x == 'move' else None
-		self.moves = list(map(moves, self.game.get_moves().keys()))
+	def search():
+		if self.move_count < 10:
+			self.moves = self.game.valid_moves(self.color)
 
 
