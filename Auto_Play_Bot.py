@@ -1,5 +1,5 @@
 import pieces
-
+##TPWGAHPENFQCTF6
 class Bot:
 	def __init__(self, board,color):
 		self.color = color
@@ -14,7 +14,7 @@ class Bot:
 		            "knight": 3,
 		            "rook": 5,
 		            "bishop": 3,
-		            "king": 20
+		            "kjng": 20
 	}
 	lost_list = []
 	attackable = []
